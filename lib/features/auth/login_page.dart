@@ -19,8 +19,17 @@ class _LoginPageState extends State<LoginPage> {
   // Instância do Firebase Auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  String? _emailError;
+  String? _passwordError;
+
   // Método para lidar com o login/cadastro
   void _submit() async {
+    // Limpa os erros anteriores antes de uma nova tentativa
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+
     try {
       if (_isLoginMode) {
         // Modo Login
@@ -39,12 +48,33 @@ class _LoginPageState extends State<LoginPage> {
       // O AuthGate vai lidar com o redirecionamento automaticamente.
     } on FirebaseAuthException catch (e) {
       // Exibe uma mensagem de erro para o usuário
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message ?? 'Ocorreu um erro.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      setState(() {
+        switch (e.code) {
+          case 'invalid-email':
+            _emailError = 'O formato do email é inválido.';
+            break;
+          case 'user-not-found':
+            _emailError = 'Nenhum usuário encontrado com este email.';
+            break;
+          case 'email-already-in-use':
+            _emailError = 'Este email já está sendo usado em outra conta.';
+            break;
+          case 'wrong-password':
+            _passwordError = 'A senha está incorreta.';
+            break;
+          case 'weak-password':
+            _passwordError =
+                'A senha é muito fraca. Use no mínimo 6 caracteres.';
+            break;
+          case 'invalid-credential':
+            _passwordError =
+                'Credenciais inválidas. Verifique seu email e senha.';
+            break;
+          default:
+            // Um erro genérico caso não seja um dos acima
+            _passwordError = 'Ocorreu um erro. Tente novamente.';
+        }
+      });
     }
   }
 
@@ -59,7 +89,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isLoginMode ? 'Login - Personal Clouds' : 'Cadastro - Personal Clouds'),
+        title: Text(
+          _isLoginMode
+              ? 'Login - Personal Clouds'
+              : 'Cadastro - Personal Clouds',
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -74,10 +108,11 @@ class _LoginPageState extends State<LoginPage> {
               // Campo de Email
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
+                  errorText: _emailError, // Exibe erro se houver
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -86,10 +121,11 @@ class _LoginPageState extends State<LoginPage> {
               // Campo de Senha
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Senha',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
+                  errorText: _passwordError, // Exibe erro se houver
                 ),
                 obscureText: true,
               ),
