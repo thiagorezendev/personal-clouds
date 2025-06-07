@@ -1,0 +1,47 @@
+# Arquivos de logs e de sistema operacional
+*.log
+.DS_Store
+Thumbs.db
+
+# Arquivos gerados por IDEs
+.idea/
+.vscode/
+*.iml
+
+# Ferramentas e dependências do Dart e Flutter
+.dart_tool/
+build/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# # # ARQUIVOS SENSÍVEIS E DE CONFIGURAÇÃO - NÃO FAZER COMMIT! # # #
+
+# Configuração do Firebase
+lib/firebase_options.dart
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+
+# Chaves de assinatura do Android (Release)
+/android/key.properties
+/android/app/*.jks
+/android/app/*.keystore
+
+# Chaves de API de serviços externos (ex: OpenWeatherMap, NASA)
+.env*
+
+# # # Arquivos específicos de plataforma # # #
+
+# Android
+/android/local.properties
+/android/.gradle/
+
+# iOS & macOS
+**/ios/Pods/
+**/ios/.symlinks/
+**/macos/Pods/
+**/macos/.symlinks/
+
+# Arquivos gerados (opcional, mas recomendado)
+*.g.dart
+*.freezed.dart
